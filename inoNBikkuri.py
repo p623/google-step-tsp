@@ -47,7 +47,7 @@ for combi in itertools.permutations(indexs):#すべての組み合わせを試�
     
 print("index")
 for number in minimumCombi:
-    print(number)
+    print(number+1)
 
     
 
