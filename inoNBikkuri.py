@@ -40,7 +40,7 @@ for combi in itertools.permutations(indexs):#すべての組み合わせを試�
     totalDistance=disLast
     for dis in disz:
         totalDistance+=dis
-    #最小距離(二乗距離の和)が初期値or今のトータル距離より大きい時、データを上書き
+    #最小距離が初期値or今のトータル距離より大きい時、データを上書き
     if minimumDis == 0 or minimumDis > totalDistance:
         minimumCombi=combi
         minimumDis=totalDistance
