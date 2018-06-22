@@ -1,7 +1,7 @@
 import csv
 import itertools
 
-csv_file = open("input_0.csv","r", encoding="ms932",errors="",newline="")#csvファイルは適宜変える
+csv_file = open("input_1.csv","r", encoding="ms932",errors="",newline="")#csvファイルは適宜変える
 f=csv.reader(csv_file, delimiter="\t", doublequote=True, lineterminator="\r\n", quotechar='"',skipinitialspace=True)
 header=next(f)
 x=[]
@@ -47,7 +47,7 @@ for combi in itertools.permutations(indexs):#すべての組み合わせを試�
     
 print("index")
 for number in minimumCombi:
-    print(number+1)
+    print(number)
 
     
 
