@@ -1,7 +1,8 @@
 import csv
 import itertools
+import math
 
-csv_file = open("input_1.csv","r", encoding="ms932",errors="",newline="")#csvファイルは適宜変える
+csv_file = open("input_0.csv","r", encoding="ms932",errors="",newline="")#csvファイルは適宜変える
 f=csv.reader(csv_file, delimiter="\t", doublequote=True, lineterminator="\r\n", quotechar='"',skipinitialspace=True)
 header=next(f)
 x=[]
@@ -29,13 +30,13 @@ for combi in itertools.permutations(indexs):#すべての組み合わせを試�
 
     #for distance
     param=0
-    disz=[]#それぞれの二点間の距離の二乗を入れる用のリスト
+    disz=[]#それぞれの二点間の距離を入れる用のリスト
     while param < dataLength-1:
-        disz.append((x[combi[param]]-x[combi[param+1]])*(x[combi[param]]-x[combi[param+1]])+(y[combi[param]]-y[combi[param+1]])*(y[combi[param]]-y[combi[param+1]]))
+        disz.append(math.sqrt((x[combi[param]]-x[combi[param+1]])*(x[combi[param]]-x[combi[param+1]])+(y[combi[param]]-y[combi[param+1]])*(y[combi[param]]-y[combi[param+1]])))
         param+=1
-    #一番最後と一番最初の点の距離の二乗だけ特別に計算
-    disLast=(x[combi[0]]-x[combi[dataLength-1]])*(x[combi[0]]-x[combi[dataLength-1]])+(y[combi[0]]-y[combi[dataLength-1]])*(y[combi[0]]-y[combi[dataLength-1]])
-    # それぞれの距離の二乗を足し合わせる
+    #一番最後と一番最初の点の距離だけ特別に計算
+    disLast= math.sqrt((x[combi[0]]-x[combi[dataLength-1]])*(x[combi[0]]-x[combi[dataLength-1]])+(y[combi[0]]-y[combi[dataLength-1]])*(y[combi[0]]-y[combi[dataLength-1]]))
+    # それぞれの距離を足し合わせる
     totalDistance=disLast
     for dis in disz:
         totalDistance+=dis
