@@ -58,7 +58,7 @@ def calcuDist(cities,tour):#道順を与えると、トータル距離を計算�
     return allDist
 
 
-def annealingoptimize(cities,firstTour,firstDist,distGreedy,T=10000, cool=0.99):#hill climb(?) or yakinamasi部分
+def annealingoptimize(cities,firstTour,firstDist,distGreedy,T=100000, cool=0.99):#hill climb(?) or yakinamasi部分
 
     #初期値
     totalDist=firstDist
@@ -85,7 +85,7 @@ def annealingoptimize(cities,firstTour,firstDist,distGreedy,T=10000, cool=0.99):
         #↓これの#消すと焼きなましに(?)、pの決め方テキトーです、ググってテキトーに決めた
         #p= pow(math.e, -abs(newTotalDist-totalDist)/T)
 
-        if newTotalDist<totalDist: #or random.random()<p: ←これの#消すと焼きなましに(?)
+        if newTotalDist<totalDist:# or random.random()<p: #←これの#消すと焼きなましに(?)
             tour=calculatedTour
             totalDist=newTotalDist
 
@@ -95,12 +95,9 @@ def annealingoptimize(cities,firstTour,firstDist,distGreedy,T=10000, cool=0.99):
         makeTour(cities)
         annealingoptimize(cities,tour,firstDist,distGreedy)
     else:
-        print("-------print totalDist--------")
-        print(totalDist)
         print("--------the best tour by hill climb---------")
         print(tour)
-        allDist=calcuDist(cities,tour)
-        print("---print all Dist----")
+        print("-------print totalDist--------")
         print(totalDist)
         return tour
         
@@ -124,7 +121,7 @@ if __name__ == '__main__':
 #----------------------------↑forMain------------------------------
 
 
-#-----------------コメント-------------------
+#-----------------↓コメント-------------------
 #よくわからない....
 #なんか16以上がかなり重くなる...
 #何回か実行すると割と良さげな値が出る(?)
@@ -133,4 +130,33 @@ if __name__ == '__main__':
 #勝手にやってごめん...
 #何なら無視しちゃって大丈夫だよー！！！
 
-#-----------------コメント-------------------
+#-----------------↑コメント-------------------
+
+#------------------↓問題点----------------------
+#初期値も毎回の山登りのためにランダムに更新しているけど、その意味あるのかわからない
+#Tの値はもっと大きい方がいいのか、小さい方がいいのかわからない
+#コードに無駄があると思われる
+#何回か "$ python inoYaki.py input_n.csv" を実行しないと、最短?(sample/saのoutput)が得られない(n=0,1,2)
+#何回か $ python inoYaki.py input_n.csv" を実行しても、最短?(sample/saのoutput)が得られない(n=3)
+# "$ python inoYaki.py input_n.csv" を実行すると謎のエラーが出る(n>=4)
+#以下、そのエラー文の添付(たぶん、何回も繰り返し呼ばれすぎたことによるエラーかな???)
+#Traceback (most recent call last):
+  #File "inoYaki.py", line 119, in <module>
+    #annealingoptimize(cities,firstTour,firstDist,distGreedy)
+  #File "inoYaki.py", line 96, in annealingoptimize
+    #annealingoptimize(cities,tour,firstDist,distGreedy)
+  #File "inoYaki.py", line 96, in annealingoptimize
+    #annealingoptimize(cities,tour,firstDist,distGreedy)
+  #File "inoYaki.py", line 96, in annealingoptimize
+    #annealingoptimize(cities,tour,firstDist,distGreedy)
+  #[Previous line repeated 985 more times]
+  #File "inoYaki.py", line 71, in annealingoptimize
+    #choicedCombi=random.sample(citiesNumberIndex,2)
+  #File "/Users/p/.pyenv/versions/3.6.3/lib/python3.6/random.py", line 310, in sample
+    #if isinstance(population, _Set):
+  #File "/Users/p/.pyenv/versions/3.6.3/lib/python3.6/abc.py", line 188, in __instancecheck__
+    #subclass in cls._abc_negative_cache):
+  #File "/Users/p/.pyenv/versions/3.6.3/lib/python3.6/_weakrefset.py", line 75, in __contains__
+    #return wr in self.data
+#RecursionError: maximum recursion depth exceeded in comparison
+#------------------↑問題点----------------------
