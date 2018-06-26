@@ -47,12 +47,13 @@ def calcuDist(cities,tour):#道順を与えると、トータル距離を計算�
     return allDist
 
 
-def annealingoptimize(cities,firstTour,allDist,distGreedy,T=1000, cool=0.99):#hill climb(?) or yakinamasi部分
+def annealingoptimize(cities,firstTour,allDist,distGreedy,T=100000, cool=0.9999):#hill climb(?) or yakinamasi部分
     forSaiki=0
     while forSaiki<100001:
         #初期値
         tour=makeTour(cities)
         totalDist=calcuDist(cities,tour)
+        T=100000
         while T>0.0001:
             #値を交換する二つのindexの組み合わせをランダムに決める
             #下記テキトーな二つのcityを入れ替えるための操作
@@ -76,6 +77,7 @@ def annealingoptimize(cities,firstTour,allDist,distGreedy,T=1000, cool=0.99):#hi
             p= pow(math.e, -abs(newTotalDist-totalDist)/T)
 
             if newTotalDist<totalDist or random.random()<p: #←これの#消すと焼きなましに(?)
+                print(totalDist)
                 tour=calculatedTour
                 totalDist=newTotalDist
 
