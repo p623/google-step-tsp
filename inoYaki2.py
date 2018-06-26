@@ -57,6 +57,8 @@ def annealingoptimize(cities,firstTour,allDist,distGreedy,T=1000, cool=0.99):#hi
             #値を交換する二つのindexの組み合わせの決め方をinoYakiとは変えてみた
             #やっていることは、　ランダムに一点を選んで、その一点のある程度そばにある点の中からもう一点選んで交換してみるという感じ
             #個人的にはこっちの方が焼きなまし法っぽくっていいのかなあと思ったんだけど実際どうなんだろう
+            #index: 選ばれた道順内での周り順の通し番号
+            #a, b: 道順のリストから指定されたindexの値を取り出して得られる都市番号
             citiesNumber=len(cities)
             citiesNumberIndex=(list(range(0,citiesNumber)))
             choicedCombi=random.sample(citiesNumberIndex,1)
@@ -74,7 +76,7 @@ def annealingoptimize(cities,firstTour,allDist,distGreedy,T=1000, cool=0.99):#hi
 
             for city in tour:
                 calculatedTour.append(city)
-            
+
             calculatedTour[index1[0]]=a
             calculatedTour[index0]=b
             #このcalculatedTourがテキトーに二点のcityを入れ替えた後の道順
@@ -87,7 +89,7 @@ def annealingoptimize(cities,firstTour,allDist,distGreedy,T=1000, cool=0.99):#hi
                 totalDist=newTotalDist
 
             T=T*cool
-        
+
         if totalDist<distGreedy:#Greedyより結果が良かったら終了する
             print("--------the best tour by hill climb---------")
             print(tour)
@@ -97,7 +99,7 @@ def annealingoptimize(cities,firstTour,allDist,distGreedy,T=1000, cool=0.99):#hi
         forSaiki+=1
         if forSaiki==100000:
             print("break")
-        
+
 
 #----------------------------↓forMain ------------------------------
 if __name__ == '__main__':
@@ -114,7 +116,7 @@ if __name__ == '__main__':
     firstTour=makeTour(cities)
     firstDist=calcuDist(cities,firstTour)
     annealingoptimize(cities,firstTour,firstDist,distGreedy)
-   
+
 #----------------------------↑forMain------------------------------
 
 
