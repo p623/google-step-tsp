@@ -92,7 +92,7 @@ def annealingoptimize(cities,firstTour,allDist,distGreedy,T=100000, cool=0.9999)
         count += 1
 
     forSaiki=0
-    while forSaiki<10000:
+    while forSaiki<citiesNumber*3000:
         citiesNumberIndex=(list(range(0,citiesNumber-3)))
         choicedCombi=random.sample(citiesNumberIndex,1)
         index0=choicedCombi[0]
