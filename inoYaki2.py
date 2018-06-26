@@ -89,6 +89,33 @@ def annealingoptimize(cities,firstTour,allDist,distGreedy,T=100000, cool=0.9999)
 
         T=T*cool
 
+    forSaiki=0
+    while forSaiki<10000:
+        citiesNumber=len(cities)
+        citiesNumberIndex=(list(range(0,citiesNumber-3)))
+        choicedCombi=random.sample(citiesNumberIndex,1)
+        index0=choicedCombi[0]
+        citiesNumberIndex=(list(range(index0+2,citiesNumber-1)))
+        choicedCombi1=random.sample(citiesNumberIndex,1)
+        index1=choicedCombi1[0]
+
+        before=distance(cities[tour[index0]],cities[tour[index0+1]])+distance(cities[tour[index1]],cities[tour[index1+1]])
+        after=distance(cities[tour[index0]],cities[tour[index1]])+distance(cities[tour[index0+1]],cities[tour[index1+1]])
+        if before>after:
+            calculatedTour=[]
+            for city in tour[:index0+1]:
+                calculatedTour.append(city)
+            for city in reversed(tour[index0+1:index1+1]):
+                calculatedTour.append(city)
+            #print(calculatedTour)
+            for city in tour[index1+1:]:
+                calculatedTour.append(city)
+            newTotalDist=calcuDist(cities,calculatedTour)
+            tour=calculatedTour
+            totalDist=newTotalDist
+            print(totalDist)
+        forSaiki+=1
+
     if totalDist<distGreedy:#Greedyより結果が良かったら終了する
         print("better than greedy!")
         print("--------the best tour by hill climb---------")
