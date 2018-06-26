@@ -81,7 +81,7 @@ def annealingoptimize(cities,firstTour,allDist,distGreedy,T=100000, cool=0.9999)
         p= pow(math.e, -abs(newTotalDist-totalDist)/T)
 
         if newTotalDist<totalDist or random.random()<p: #←これの#消すと焼きなましに(?)
-            print(totalDist)
+            print("焼きなまし", totalDist)
             tour=calculatedTour
             totalDist=newTotalDist
         else:
@@ -107,7 +107,7 @@ def annealingoptimize(cities,firstTour,allDist,distGreedy,T=100000, cool=0.9999)
             newTotalDist=calcuDist(cities,calculatedTour)
             tour=calculatedTour
             totalDist=newTotalDist
-            print(totalDist)
+            print("2 opt", totalDist)
         forSaiki+=1
 
     if totalDist<distGreedy:#Greedyより結果が良かったら終了する
