@@ -48,60 +48,56 @@ def calcuDist(cities,tour):#道順を与えると、トータル距離を計算�
 
 
 def annealingoptimize(cities,firstTour,allDist,distGreedy,T=100000, cool=0.9999):#hill climb(?) or yakinamasi部分
-    forSaiki=0
-    while forSaiki<100001:
-        #初期値
-        tour=makeTour(cities)
-        totalDist=calcuDist(cities,tour)
-        print(forSaiki)
-        T=100000
-        while T>0.0001:
-            #値を交換する二つのindexの組み合わせの決め方をinoYakiとは変えてみた
-            #やっていることは、　ランダムに一点を選んで、その一点のある程度そばにある点の中からもう一点選んで交換してみるという感じ
-            #個人的にはこっちの方が焼きなまし法っぽくっていいのかなあと思ったんだけど実際どうなんだろう
-            #index: 選ばれた道順内での周り順の通し番号
-            #a, b: 道順のリストから指定されたindexの値を取り出して得られる都市番号
-            citiesNumber=len(cities)
-            citiesNumberIndex=(list(range(0,citiesNumber)))
-            choicedCombi=random.sample(citiesNumberIndex,1)
-            index0=choicedCombi[0]
-            if index0>=citiesNumber//4 and index0<citiesNumber-citiesNumber//4:
-                indexs=range(index0-citiesNumber//4,index0+citiesNumber//4)
-            elif index0<citiesNumber//4:
-                indexs=range(index0+1,index0+1+citiesNumber//2)
-            else:
-                indexs=range(index0-citiesNumber//2,index0)
-            index1=random.sample(indexs,1)
-            a=tour[index0] #選ばれたindexのcity
-            b=tour[index1[0]] #選ばれたindexのcity2
-            calculatedTour=[]
+    #初期値
+    tour=firstTour
+    totalDist=allDist
+    #tour=makeTour(cities)
+    #totalDist=calcuDist(cities,tour)
+    calculatedTour=tour[:]
+    citiesNumber=len(cities)
+    citiesNumberIndex=(list(range(0,citiesNumber)))
 
-            for city in tour:
-                calculatedTour.append(city)
+    while T>0.0001:
+        #値を交換する二つのindexの組み合わせの決め方をinoYakiとは変えてみた
+        #やっていることは、　ランダムに一点を選んで、その一点のある程度そばにある点の中からもう一点選んで交換してみるという感じ
+        #個人的にはこっちの方が焼きなまし法っぽくっていいのかなあと思ったんだけど実際どうなんだろう
+        #index: 選ばれた道順内での周り順の通し番号
+        choicedCombi=random.sample(citiesNumberIndex,1)
+        index0=choicedCombi[0]
+        if index0>=citiesNumber//4 and index0<citiesNumber-citiesNumber//4:
+            indexs=range(index0-citiesNumber//4,index0+citiesNumber//4)
+        elif index0<citiesNumber//4:
+            indexs=range(index0+1,index0+1+citiesNumber//2)
+        else:
+            indexs=range(index0-citiesNumber//2,index0)
+        index1=random.sample(indexs,1)
 
-            calculatedTour[index1[0]]=a
-            calculatedTour[index0]=b
-            #このcalculatedTourがテキトーに二点のcityを入れ替えた後の道順
-            newTotalDist=calcuDist(cities,calculatedTour)
-            #↓これの#消すと焼きなましに(?)、pの決め方テキトーです、ググってテキトーに決めた
-            p= pow(math.e, -abs(newTotalDist-totalDist)/T)
+        #選ばれた2点を交換
+        calculatedTour[index0], calculatedTour[index1[0]] = calculatedTour[index1[0]], calculatedTour[index0]
 
-            if newTotalDist<totalDist or random.random()<p: #←これの#消すと焼きなましに(?)
-                print(totalDist)
-                tour=calculatedTour
-                totalDist=newTotalDist
+        #このcalculatedTourがテキトーに二点のcityを入れ替えた後の道順
+        newTotalDist=calcuDist(cities,calculatedTour)
+        #↓これの#消すと焼きなましに(?)、pの決め方テキトーです、ググってテキトーに決めた
+        p= pow(math.e, -abs(newTotalDist-totalDist)/T)
 
-            T=T*cool
-
-        if totalDist<distGreedy:#Greedyより結果が良かったら終了する
-            print("--------the best tour by hill climb---------")
-            print(tour)
-            print("-------print totalDist--------")
+        if newTotalDist<totalDist or random.random()<p: #←これの#消すと焼きなましに(?)
             print(totalDist)
-            break
-        forSaiki+=1
-        if forSaiki==100000:
-            print("break")
+            tour=calculatedTour
+            totalDist=newTotalDist
+        else:
+            calculatedTour[index0], calculatedTour[index1[0]] = calculatedTour[index1[0]], calculatedTour[index0]
+
+        T=T*cool
+
+    if totalDist<distGreedy:#Greedyより結果が良かったら終了する
+        print("better than greedy!")
+        print("--------the best tour by hill climb---------")
+        print(tour)
+        print("-------print totalDist--------")
+        print(totalDist)
+        break
+    else:
+        print("worse than greedy...")
 
 
 #----------------------------↓forMain ------------------------------
