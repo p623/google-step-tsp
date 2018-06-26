@@ -107,7 +107,7 @@ if __name__ == '__main__':
     #assert len(sys.argv) > 1
     #tour = solve(read_input(sys.argv[1]))
     #print_tour(tour)
-    random.seed(0)
+    #random.seed(0) #ランダム値を固定する場合
     assert len(sys.argv) > 1
     cities=read_input(sys.argv[1])
     tourGreedy = solve(cities)
