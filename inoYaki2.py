@@ -1,6 +1,11 @@
+#!/usr/bin/env python3
+# coding: UTF-8
+
 import itertools
 import random
+
 #----------------------------↓solver_greedy.py------------------------------
+
 import sys
 import math
 
@@ -32,91 +37,91 @@ def solve(cities):
     print("-----print greedyTour-----")
     print(tour)
     return tour
+
 #----------------------------↑solver_greedy.py------------------------------
-def makeTour(cities):#道順の初期値をランダムに(テキトーに決めてくれる)
+
+def makeTour(cities): # 道順の初期値をランダムに(テキトーに決めてくれる)
     firstTour=list(range(len(cities)))
     random.shuffle(firstTour)
     return firstTour
 
 
-def calcuDist(cities,tour):#道順を与えると、トータル距離を計算してくれる
-    allDist=0
+def calcuDist(cities,tour): # 道順を与えると、トータル距離を計算してくれる
+    allDist = 0
     for i in range(len(tour)-1):
-        allDist+=distance(cities[tour[i]],cities[tour[i+1]])
-    allDist+=distance(cities[tour[0]],cities[tour[len(tour)-1]])
+        allDist += distance(cities[tour[i]], cities[tour[i+1]])
+    allDist += distance(cities[tour[0]], cities[tour[len(tour)-1]])
     return allDist
 
 
-def annealingoptimize(cities,firstTour,allDist,distGreedy,T=100000, cool=0.9999):#hill climb(?) or yakinamasi部分
-    #初期値
-    tour=firstTour
-    totalDist=allDist
-    #tour=makeTour(cities)
-    #totalDist=calcuDist(cities,tour)
-    calculatedTour=tour[:]
-    citiesNumber=len(cities)
-    citiesNumberIndex=(list(range(0,citiesNumber)))
+def annealingoptimize(cities, firstTour, allDist, distGreedy, T=100000, cool=0.9999): # hill climb(?) or yakinamasi部分
+    # 初期値
+    tour = firstTour
+    totalDist = allDist
+    # tour = makeTour(cities)
+    # totalDist = calcuDist(cities, tour)
+    calculatedTour = tour[:]
+    citiesNumber = len(cities)
+    citiesNumberIndex = (list(range(0, citiesNumber)))
 
     count = 0
     while count < 5:
-        while T>0.0001:
-            #値を交換する二つのindexの組み合わせの決め方をinoYakiとは変えてみた
-            #やっていることは、ランダムに一点を選んで、その一点のある程度そばにある点の中からもう一点選んで交換してみるという感じ
-            #個人的にはこっちの方が焼きなまし法っぽくっていいのかなあと思ったんだけど実際どうなんだろう
-            #index: 選ばれた道順内での周り順の通し番号
-            choicedCombi=random.sample(citiesNumberIndex,1)
-            index0=choicedCombi[0]
-            if index0>=citiesNumber//4 and index0<citiesNumber-citiesNumber//4:
-                indexs=range(index0-citiesNumber//4,index0+citiesNumber//4)
-            elif index0<citiesNumber//4:
-                indexs=range(index0+1,index0+1+citiesNumber//2)
+        while T > 0.0001:
+            # 値を交換する二つのindexの組み合わせの決め方をinoYakiとは変えてみた
+            # やっていることは、ランダムに一点を選んで、その一点のある程度そばにある点の中からもう一点選んで交換してみるという感じ
+            # 個人的にはこっちの方が焼きなまし法っぽくっていいのかなあと思ったんだけど実際どうなんだろう
+            # index: 選ばれた道順内での周り順の通し番号
+            choicedCombi = random.sample(citiesNumberIndex, 1)
+            index0 = choicedCombi[0]
+            if index0 >= citiesNumber//4 and index0 < citiesNumber-citiesNumber//4:
+                indexs = range(index0-citiesNumber//4, index0+citiesNumber//4)
+            elif index0 < citiesNumber//4:
+                indexs = range(index0+1, index0+1+citiesNumber//2)
             else:
-                indexs=range(index0-citiesNumber//2,index0)
-            index1=random.sample(indexs,1)
+                indexs = range(index0-citiesNumber//2, index0)
+            index1 = random.sample(indexs, 1)
 
-            #選ばれた2点を交換
+            # 選ばれた2点を交換
             calculatedTour[index0], calculatedTour[index1[0]] = calculatedTour[index1[0]], calculatedTour[index0]
 
-            #このcalculatedTourがテキトーに二点のcityを入れ替えた後の道順
-            newTotalDist=calcuDist(cities,calculatedTour)
-            #↓これの#消すと焼きなましに(?)、pの決め方テキトーです、ググってテキトーに決めた
-            p= pow(math.e, -abs(newTotalDist-totalDist)/T)
+            # このcalculatedTourがテキトーに二点のcityを入れ替えた後の道順
+            newTotalDist = calcuDist(cities, calculatedTour)
+            # ↓これの#消すと焼きなましに(?)、pの決め方テキトーです、ググってテキトーに決めた
+            p = pow(math.e, -abs(newTotalDist-totalDist)/T) # 温度から確率を定義する
 
-            if newTotalDist<totalDist or random.random()<p: #←これの#消すと焼きなましに(?)
-                print("焼きなまし", totalDist)
-                tour=calculatedTour
-                totalDist=newTotalDist
+            if newTotalDist < totalDist or random.random() < p: # newTotalDistが小さければ採用する、大きい場合は確率的に採用する
+                print("Annealing", totalDist)
+                tour = calculatedTour
+                totalDist = newTotalDist
             else:
                 calculatedTour[index0], calculatedTour[index1[0]] = calculatedTour[index1[0]], calculatedTour[index0]
-            T=T*cool
+            T = T * cool # 温度を下げる
         count += 1
 
-    forSaiki=0
-    while forSaiki<citiesNumber*3000:
-        citiesNumberIndex=(list(range(0,citiesNumber-3)))
-        choicedCombi=random.sample(citiesNumberIndex,1)
-        index0=choicedCombi[0]
-        citiesNumberIndex=(list(range(index0+2,citiesNumber-1)))
-        choicedCombi1=random.sample(citiesNumberIndex,1)
-        index1=choicedCombi1[0]
+    forSaiki = 0
+    while forSaiki < citiesNumber*3000:
+        citiesNumberIndex = (list(range(0, citiesNumber-3)))
+        choicedCombi = random.sample(citiesNumberIndex, 1)
+        index0 = choicedCombi[0]
+        citiesNumberIndex = (list(range(index0+2, citiesNumber-1)))
+        choicedCombi1 = random.sample(citiesNumberIndex, 1)
+        index1 = choicedCombi1[0]
 
-        before=distance(cities[tour[index0]],cities[tour[index0+1]])+distance(cities[tour[index1]],cities[tour[index1+1]])
-        after=distance(cities[tour[index0]],cities[tour[index1]])+distance(cities[tour[index0+1]],cities[tour[index1+1]])
-        if before>after:
-            calculatedTour=tour[:index0+1]
+        before = distance(cities[tour[index0]], cities[tour[index0+1]]) + distance(cities[tour[index1]], cities[tour[index1+1]])
+        after = distance(cities[tour[index0]], cities[tour[index1]]) + distance(cities[tour[index0+1]], cities[tour[index1+1]])
+        if before > after:
+            calculatedTour = tour[:index0+1]
             calculatedTour.extend(reversed(tour[index0+1:index1+1]))
             calculatedTour.extend(tour[index1+1:])
-            #print(calculatedTour)
-            newTotalDist=calcuDist(cities,calculatedTour)
-            tour=calculatedTour
-            totalDist=newTotalDist
+            # print(calculatedTour)
+            newTotalDist = calcuDist(cities, calculatedTour)
+            tour = calculatedTour
+            totalDist = newTotalDist
             print("2 opt", totalDist)
-        forSaiki+=1
+        forSaiki += 1
 
 
-
-
-    if totalDist<distGreedy:#Greedyより結果が良かったら終了する
+    if totalDist < distGreedy: # Greedyより結果が良かったら終了する
         print("better than greedy!")
         print("--------the best tour by hill climb---------")
         print(tour)
@@ -127,26 +132,28 @@ def annealingoptimize(cities,firstTour,allDist,distGreedy,T=100000, cool=0.9999)
 
 
 #----------------------------↓forMain ------------------------------
-if __name__ == '__main__':
-    #assert len(sys.argv) > 1
-    #tour = solve(read_input(sys.argv[1]))
-    #print_tour(tour)
-    #random.seed(0)
-    assert len(sys.argv) > 1
-    cities=read_input(sys.argv[1])
-    tourGreedy = solve(cities)
-    distGreedy=calcuDist(cities,tourGreedy)
-    print("-----print distGreedy------")
-    print(distGreedy)#ここまでgreedyの実行(別にgreedyの実行は必要ないです、greedyによる算出結果が欲しかっただけ)
 
-    firstTour=makeTour(cities)
-    firstDist=calcuDist(cities,firstTour)
-    annealingoptimize(cities,firstTour,firstDist,distGreedy)
+if __name__ == '__main__':
+    # assert len(sys.argv) > 1
+    # tour = solve(read_input(sys.argv[1]))
+    # print_tour(tour)
+    # random.seed(0)
+    assert len(sys.argv) > 1
+    cities = read_input(sys.argv[1])
+    tourGreedy = solve(cities)
+    distGreedy = calcuDist(cities, tourGreedy)
+    print("-----print distGreedy------")
+    print(distGreedy) # ここまでgreedyの実行(別にgreedyの実行は必要ないです、greedyによる算出結果が欲しかっただけ)
+
+    firstTour = makeTour(cities)
+    firstDist = calcuDist(cities, firstTour)
+    annealingoptimize(cities, firstTour, firstDist, distGreedy)
 
 #----------------------------↑forMain------------------------------
 
 
 #-----------------↓コメント-------------------
+
 #よくわからない....
 #なんか16以上がかなり重くなる...
 #何回か実行すると割と良さげな値が出る(?)
@@ -158,6 +165,7 @@ if __name__ == '__main__':
 #-----------------↑コメント-------------------
 
 #------------------↓問題点----------------------
+
 #初期値も毎回の山登りのためにランダムに更新しているけど、その意味あるのかわからない
 #Tの値はもっと大きい方がいいのか、小さい方がいいのかわからない
 #コードに無駄があると思われる
