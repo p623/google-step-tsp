@@ -106,7 +106,7 @@ def annealingoptimize(cities,firstTour,allDist,distGreedy,T=100000, cool=0.9999)
             calculatedTour=tour[:index0+1]
             calculatedTour.extend(reversed(tour[index0+1:index1+1]))
             calculatedTour.extend(tour[index1+1:])
-            print(calculatedTour)
+            #print(calculatedTour)
             newTotalDist=calcuDist(cities,calculatedTour)
             tour=calculatedTour
             totalDist=newTotalDist
@@ -131,7 +131,7 @@ if __name__ == '__main__':
     #assert len(sys.argv) > 1
     #tour = solve(read_input(sys.argv[1]))
     #print_tour(tour)
-    random.seed(0)
+    #random.seed(0)
     assert len(sys.argv) > 1
     cities=read_input(sys.argv[1])
     tourGreedy = solve(cities)
