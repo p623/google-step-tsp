@@ -102,14 +102,9 @@ def annealingoptimize(cities,firstTour,allDist,distGreedy,T=100000, cool=0.9999)
         before=distance(cities[tour[index0]],cities[tour[index0+1]])+distance(cities[tour[index1]],cities[tour[index1+1]])
         after=distance(cities[tour[index0]],cities[tour[index1]])+distance(cities[tour[index0+1]],cities[tour[index1+1]])
         if before>after:
-            calculatedTour=[]
-            for city in tour[:index0+1]:
-                calculatedTour.append(city)
-            for city in reversed(tour[index0+1:index1+1]):
-                calculatedTour.append(city)
-            #print(calculatedTour)
-            for city in tour[index1+1:]:
-                calculatedTour.append(city)
+            calculatedTour=tour[:index0+1]
+            calculatedTour=tour.extend(reversed(tour[index0+1:index1+1]))
+            calculatedTour=tour.extend(tour[index1+1:])
             newTotalDist=calcuDist(cities,calculatedTour)
             tour=calculatedTour
             totalDist=newTotalDist
@@ -122,7 +117,6 @@ def annealingoptimize(cities,firstTour,allDist,distGreedy,T=100000, cool=0.9999)
         print(tour)
         print("-------print totalDist--------")
         print(totalDist)
-        break
     else:
         print("worse than greedy...")
 
