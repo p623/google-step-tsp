@@ -45,7 +45,6 @@ def makeTour(cities): # 道順の初期値をランダムに(テキトーに決�
     random.shuffle(firstTour)
     return firstTour
 
-
 def calcuDist(cities,tour): # 道順を与えると、トータル距離を計算してくれる
     allDist = 0
     for i in range(len(tour)-1):
@@ -54,18 +53,17 @@ def calcuDist(cities,tour): # 道順を与えると、トータル距離を計�
     return allDist
 
 
-def annealingoptimize(cities, firstTour, allDist, distGreedy, T=100000, cool=0.9999): # hill climb(?) or yakinamasi部分
+def annealingoptimize(cities, distGreedy, T=100000, cool=0.9999): # hill climb(?) or yakinamasi部分
     # 初期値
-    tour = firstTour
-    totalDist = allDist
-    # tour = makeTour(cities)
-    # totalDist = calcuDist(cities, tour)
-    calculatedTour = tour[:]
     citiesNumber = len(cities)
     citiesNumberIndex = (list(range(0, citiesNumber)))
 
     count = 0
     while count < 5:
+        tour = makeTour(cities)
+        totalDist = calcuDist(cities, tour)
+        calculatedTour = tour[:]
+        T = 1000
         while T > 0.0001:
             # 値を交換する二つのindexの組み合わせの決め方をinoYakiとは変えてみた
             # やっていることは、ランダムに一点を選んで、その一点のある程度そばにある点の中からもう一点選んで交換してみるという感じ
@@ -90,35 +88,49 @@ def annealingoptimize(cities, firstTour, allDist, distGreedy, T=100000, cool=0.9
             p = pow(math.e, -abs(newTotalDist-totalDist)/T) # 温度から確率を定義する
 
             if newTotalDist < totalDist or random.random() < p: # newTotalDistが小さければ採用する、大きい場合は確率的に採用する
-                print("Annealing", totalDist)
+                print(count, "回目:", "Annealing", totalDist)
                 tour = calculatedTour
                 totalDist = newTotalDist
             else:
                 calculatedTour[index0], calculatedTour[index1[0]] = calculatedTour[index1[0]], calculatedTour[index0]
             T = T * cool # 温度を下げる
+
+
+        forSaiki = 0
+        while forSaiki < citiesNumber*3000:
+            citiesNumberIndex = (list(range(0, citiesNumber-3)))
+            choicedCombi = random.sample(citiesNumberIndex, 1)
+            index0 = choicedCombi[0]
+            citiesNumberIndex = (list(range(index0+2, citiesNumber-1)))
+            choicedCombi1 = random.sample(citiesNumberIndex, 1)
+            index1 = choicedCombi1[0]
+
+            before = distance(cities[tour[index0]], cities[tour[index0+1]]) + distance(cities[tour[index1]], cities[tour[index1+1]])
+            after = distance(cities[tour[index0]], cities[tour[index1]]) + distance(cities[tour[index0+1]], cities[tour[index1+1]])
+            if before > after:
+                calculatedTour = tour[:index0+1]
+                calculatedTour.extend(reversed(tour[index0+1:index1+1]))
+                calculatedTour.extend(tour[index1+1:])
+                # print(calculatedTour)
+                newTotalDist = calcuDist(cities, calculatedTour)
+                tour = calculatedTour
+                totalDist = newTotalDist
+                print(count, "回目:", "2 opt", totalDist)
+            forSaiki += 1
+
+
+        if count == 0:
+            bestTour = tour[:]
+            bestDist = totalDist
+        else:
+            if bestDist>totalDist:
+                bestTour = tour[:]
+                bestDist = totalDist
+        print(count, "回目:", totalDist)
+
         count += 1
-
-    forSaiki = 0
-    while forSaiki < citiesNumber*3000:
-        citiesNumberIndex = (list(range(0, citiesNumber-3)))
-        choicedCombi = random.sample(citiesNumberIndex, 1)
-        index0 = choicedCombi[0]
-        citiesNumberIndex = (list(range(index0+2, citiesNumber-1)))
-        choicedCombi1 = random.sample(citiesNumberIndex, 1)
-        index1 = choicedCombi1[0]
-
-        before = distance(cities[tour[index0]], cities[tour[index0+1]]) + distance(cities[tour[index1]], cities[tour[index1+1]])
-        after = distance(cities[tour[index0]], cities[tour[index1]]) + distance(cities[tour[index0+1]], cities[tour[index1+1]])
-        if before > after:
-            calculatedTour = tour[:index0+1]
-            calculatedTour.extend(reversed(tour[index0+1:index1+1]))
-            calculatedTour.extend(tour[index1+1:])
-            # print(calculatedTour)
-            newTotalDist = calcuDist(cities, calculatedTour)
-            tour = calculatedTour
-            totalDist = newTotalDist
-            print("2 opt", totalDist)
-        forSaiki += 1
+    tour = bestTour
+    totalDist = bestDist
 
 
     if totalDist < distGreedy: # Greedyより結果が良かったら終了する
@@ -129,6 +141,10 @@ def annealingoptimize(cities, firstTour, allDist, distGreedy, T=100000, cool=0.9
         print(totalDist)
     else:
         print("worse than greedy...")
+        print("--------the best tour by hill climb---------")
+        print(tour)
+        print("-------print totalDist--------")
+        print(totalDist)
 
 
 #----------------------------↓forMain ------------------------------
@@ -145,9 +161,7 @@ if __name__ == '__main__':
     print("-----print distGreedy------")
     print(distGreedy) # ここまでgreedyの実行(別にgreedyの実行は必要ないです、greedyによる算出結果が欲しかっただけ)
 
-    firstTour = makeTour(cities)
-    firstDist = calcuDist(cities, firstTour)
-    annealingoptimize(cities, firstTour, firstDist, distGreedy)
+    annealingoptimize(cities, distGreedy)
 
 #----------------------------↑forMain------------------------------
 
