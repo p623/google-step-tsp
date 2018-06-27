@@ -58,8 +58,8 @@ def annealingoptimize(cities, distGreedy, T=100000, cool=0.9999): # hill climb(?
     citiesNumber = len(cities)
     citiesNumberIndex = (list(range(0, citiesNumber)))
 
-    count = 0
-    while count < 5:
+    count = 1
+    while count <= 5:
         tour = makeTour(cities)
         totalDist = calcuDist(cities, tour)
         calculatedTour = tour[:]
@@ -79,21 +79,23 @@ def annealingoptimize(cities, distGreedy, T=100000, cool=0.9999): # hill climb(?
                 indexs = range(index0-citiesNumber//2, index0)
             index1 = random.sample(indexs, 1)
 
-            # 選ばれた2点を交換
-            calculatedTour[index0], calculatedTour[index1[0]] = calculatedTour[index1[0]], calculatedTour[index0]
-
-            # このcalculatedTourがテキトーに二点のcityを入れ替えた後の道順
-            newTotalDist = calcuDist(cities, calculatedTour)
-            # ↓これの#消すと焼きなましに(?)、pの決め方テキトーです、ググってテキトーに決めた
-            p = pow(math.e, -abs(newTotalDist-totalDist)/T) # 温度から確率を定義する
-
-            if newTotalDist < totalDist or random.random() < p: # newTotalDistが小さければ採用する、大きい場合は確率的に採用する
-                print(count, "回目:", "Annealing", totalDist)
-                tour = calculatedTour
-                totalDist = newTotalDist
-            else:
+            # 同じ2点を選んでしまった場合はやり直す
+            if index0 != index1[0]:
+                # 選ばれた2点を交換
                 calculatedTour[index0], calculatedTour[index1[0]] = calculatedTour[index1[0]], calculatedTour[index0]
-            T = T * cool # 温度を下げる
+
+                # このcalculatedTourがテキトーに二点のcityを入れ替えた後の道順
+                newTotalDist = calcuDist(cities, calculatedTour)
+                # ↓これの#消すと焼きなましに(?)、pの決め方テキトーです、ググってテキトーに決めた
+                p = pow(math.e, -abs(newTotalDist-totalDist)/T) # 温度から確率を定義する
+
+                if newTotalDist < totalDist or random.random() < p: # newTotalDistが小さければ採用する、大きい場合は確率的に採用する
+                    print(count, "回目:", "Annealing", totalDist)
+                    tour = calculatedTour
+                    totalDist = newTotalDist
+                else:
+                    calculatedTour[index0], calculatedTour[index1[0]] = calculatedTour[index1[0]], calculatedTour[index0]
+                T = T * cool # 温度を下げる
 
 
         forSaiki = 0
