@@ -97,7 +97,7 @@ def annealingoptimize(cities, distGreedy, T=100000, cool=0.9999): # hill climb(?
                     calculatedTour[index0], calculatedTour[index1[0]] = calculatedTour[index1[0]], calculatedTour[index0]
                 T = T * cool # 温度を下げる
 
-
+        # 2-opt
         forSaiki = 0
         while forSaiki < citiesNumber*3000:
             citiesNumberIndex = (list(range(0, citiesNumber-3)))
@@ -120,8 +120,70 @@ def annealingoptimize(cities, distGreedy, T=100000, cool=0.9999): # hill climb(?
                 print(count, "回目:", "2 opt", totalDist)
             forSaiki += 1
 
+        # 3-opt
+        if citiesNumber-5 > 0:
+            forSaiki = 0
+            while forSaiki < citiesNumber*3000:
+                trio = []
+                citiesNumberIndex = (list(range(0, citiesNumber-5)))
+                choiced = random.sample(citiesNumberIndex, 1)
+                i = choiced[0]
+                citiesNumberIndex = (list(range(i+2, citiesNumber-3)))
+                choiced = random.sample(citiesNumberIndex, 1)
+                j = choiced[0]
+                citiesNumberIndex = (list(range(j+2, citiesNumber-1)))
+                choiced = random.sample(citiesNumberIndex, 1)
+                k = choiced[0]
 
-        if count == 0:
+                after = [[] for i in range(4)]
+                before = distance(cities[tour[i]], cities[tour[i+1]]) + distance(cities[tour[j]], cities[tour[j+1]]) + distance(cities[tour[k]], cities[tour[k+1]])
+
+                # k+1...i-k...j+1-i+1...j 0
+                # k+1...i-j+1...k-j...i+1 1
+                # k+1...i-j+1...k-i+1...j 2
+                # k+1...i-j...i+1-k...j+1 3
+                after[0] = [distance(cities[tour[i]], cities[tour[k]]) + distance(cities[tour[j+1]], cities[tour[i+1]]) + distance(cities[tour[k+1]], cities[tour[j]]), 0]
+                after[1] = [distance(cities[tour[j+1]], cities[tour[i]]) + distance(cities[tour[k]], cities[tour[j]]) + distance(cities[tour[k+1]], cities[tour[i+1]]), 1]
+                after[2] = [distance(cities[tour[j]], cities[tour[k+1]]) + distance(cities[tour[i]], cities[tour[j+1]]) + distance(cities[tour[k]], cities[tour[i+1]]), 2]
+                after[3] = [distance(cities[tour[i]], cities[tour[j]]) + distance(cities[tour[j+1]], cities[tour[k+1]]) + distance(cities[tour[k]], cities[tour[i+1]]), 3]
+                after.sort()
+                min_after, min_after_num = after[0]
+
+                if before > min_after:
+                    if min_after_num == 0:
+                        connection = [k, i+1]
+                    elif min_after_num == 1:
+                        connection = [j+1, j]
+                    elif min_after_num == 2:
+                        connection = [j+1, i+1]
+                    elif min_after_num == 3:
+                        connection = [j, k]
+
+                    calculatedTour = tour[:i+1]
+                    if connection[0] == j+1:
+                        calculatedTour.extend(tour[j+1:k+1])
+                    elif connection[0] == j:
+                        calculatedTour.extend(reversed(tour[i+1:j+1]))
+                    elif connection[0] == k:
+                        calculatedTour.extend(reversed(tour[j+1:k+1]))
+
+                    if connection[1] == i+1:
+                        calculatedTour.extend(tour[i+1:j+1])
+                    elif connection[1] == j:
+                        calculatedTour.extend(reversed(tour[i+1:j+1]))
+                    elif connection[1] == k:
+                        calculatedTour.extend(reversed(tour[j+1:k+1]))
+
+                    calculatedTour.extend(tour[k+1:])
+
+                    # print(calculatedTour)
+                    newTotalDist = calcuDist(cities, calculatedTour)
+                    tour = calculatedTour
+                    totalDist = newTotalDist
+                    print(count, "回目:", "3 opt", totalDist)
+                forSaiki += 1
+
+        if count == 1:
             bestTour = tour[:]
             bestDist = totalDist
         else:
