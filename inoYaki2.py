@@ -95,30 +95,7 @@ def annealingoptimize(cities, distGreedy, T=100000, cool=0.9999): # hill climb(?
                     totalDist = newTotalDist
                 else:
                     calculatedTour[index0], calculatedTour[index1[0]] = calculatedTour[index1[0]], calculatedTour[index0]
-                T = T * cool # 温度を下げる
-
-        # 2-opt
-        forSaiki = 0
-        while forSaiki < citiesNumber*3000:
-            citiesNumberIndex = (list(range(0, citiesNumber-3)))
-            choicedCombi = random.sample(citiesNumberIndex, 1)
-            index0 = choicedCombi[0]
-            citiesNumberIndex = (list(range(index0+2, citiesNumber-1)))
-            choicedCombi1 = random.sample(citiesNumberIndex, 1)
-            index1 = choicedCombi1[0]
-
-            before = distance(cities[tour[index0]], cities[tour[index0+1]]) + distance(cities[tour[index1]], cities[tour[index1+1]])
-            after = distance(cities[tour[index0]], cities[tour[index1]]) + distance(cities[tour[index0+1]], cities[tour[index1+1]])
-            if before > after:
-                calculatedTour = tour[:index0+1]
-                calculatedTour.extend(reversed(tour[index0+1:index1+1]))
-                calculatedTour.extend(tour[index1+1:])
-                # print(calculatedTour)
-                newTotalDist = calcuDist(cities, calculatedTour)
-                tour = calculatedTour
-                totalDist = newTotalDist
-                print(count, "回目:", "2 opt", totalDist)
-            forSaiki += 1
+                T = T * cool # 温度を下げ
 
         # 3-opt
         if citiesNumber-5 > 0:
@@ -182,6 +159,29 @@ def annealingoptimize(cities, distGreedy, T=100000, cool=0.9999): # hill climb(?
                     totalDist = newTotalDist
                     print(count, "回目:", "3 opt", totalDist)
                 forSaiki += 1
+
+             # 2-opt
+        forSaiki = 0
+        while forSaiki < citiesNumber*3000:
+            citiesNumberIndex = (list(range(0, citiesNumber-3)))
+            choicedCombi = random.sample(citiesNumberIndex, 1)
+            index0 = choicedCombi[0]
+            citiesNumberIndex = (list(range(index0+2, citiesNumber-1)))
+            choicedCombi1 = random.sample(citiesNumberIndex, 1)
+            index1 = choicedCombi1[0]
+
+            before = distance(cities[tour[index0]], cities[tour[index0+1]]) + distance(cities[tour[index1]], cities[tour[index1+1]])
+            after = distance(cities[tour[index0]], cities[tour[index1]]) + distance(cities[tour[index0+1]], cities[tour[index1+1]])
+            if before > after:
+                calculatedTour = tour[:index0+1]
+                calculatedTour.extend(reversed(tour[index0+1:index1+1]))
+                calculatedTour.extend(tour[index1+1:])
+                # print(calculatedTour)
+                newTotalDist = calcuDist(cities, calculatedTour)
+                tour = calculatedTour
+                totalDist = newTotalDist
+                print(count, "回目:", "2 opt", totalDist)
+            forSaiki += 1
 
         if count == 1:
             bestTour = tour[:]
