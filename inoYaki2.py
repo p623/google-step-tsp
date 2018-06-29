@@ -160,7 +160,7 @@ def annealingoptimize(cities, distGreedy, T=100000, cool=0.9999): # hill climb(?
                     print(count, "回目:", "3 opt", totalDist)
                 forSaiki += 1
 
-             # 2-opt
+        # 2-opt
         forSaiki = 0
         while forSaiki < citiesNumber*3000:
             citiesNumberIndex = (list(range(0, citiesNumber-3)))
