@@ -52,6 +52,11 @@ def calcuDist(cities,tour): # 道順を与えると、トータル距離を計�
     allDist += distance(cities[tour[0]], cities[tour[len(tour)-1]])
     return allDist
 
+def printTour(tour):
+    print("index")
+    for city in tour:
+        print(city)
+
 
 def annealingoptimize(cities, distGreedy, T=100000, cool=0.9999): # hill climb(?) or yakinamasi部分
     # 初期値
@@ -78,7 +83,7 @@ def annealingoptimize(cities, distGreedy, T=100000, cool=0.9999): # hill climb(?
             else:
                 indexs = list(range(index0-citiesNumber//4+1,citiesNumber))+list(range(0,index0+citiesNumber//4-citiesNumber))
             index1 = random.sample(indexs, 1)
-            
+
             # 同じ2点を選んでしまった場合はやり直す
             if index0 != index1[0]:
                 # 選ばれた2点を交換
@@ -100,7 +105,7 @@ def annealingoptimize(cities, distGreedy, T=100000, cool=0.9999): # hill climb(?
         # 3-opt
         if citiesNumber-5 > 0:
             forSaiki = 0
-            while forSaiki < citiesNumber*3000:
+            while forSaiki < citiesNumber*5000:
                 trio = []
                 citiesNumberIndex = (list(range(0, citiesNumber-5)))
                 choiced = random.sample(citiesNumberIndex, 1)
@@ -160,7 +165,7 @@ def annealingoptimize(cities, distGreedy, T=100000, cool=0.9999): # hill climb(?
                     print(count, "回目:", "3 opt", totalDist)
                 forSaiki += 1
 
-             # 2-opt
+        # 2-opt
         forSaiki = 0
         while forSaiki < citiesNumber*3000:
             citiesNumberIndex = (list(range(0, citiesNumber-3)))
@@ -203,6 +208,12 @@ def annealingoptimize(cities, distGreedy, T=100000, cool=0.9999): # hill climb(?
         print(tour)
         print("-------print totalDist--------")
         print(totalDist)
+
+        # output~.csvにコピペする用の出力をします
+        # 長いので、yes を入力したときだけ打ち込むとprintしてくれます
+        print_or_not = input("do you want to print tour? yes or no > ")
+        if print_or_not == "yes":
+            printTour(tour)
     else:
         print("worse than greedy...")
         print("--------the best tour by hill climb---------")
@@ -237,5 +248,3 @@ if __name__ == '__main__':
 #その最初の一点が経路の中でどのような場所にあったとしても
 
 #-----------------↑コメント-------------------
-
-
